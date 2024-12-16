@@ -11,8 +11,8 @@ let C = {};
 
 C.init = async function () {
     V.init();
-    console.log(Candidats.getAll());
-    console.log(Lycees.getAll());
+    // console.log(Candidats.getAll());
+    // console.log(Lycees.getAll());
 }
 
 let V = {
@@ -34,6 +34,17 @@ V.LoadMaps = function () {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
+    V.loadMarker(map);
+
+}
+
+V.loadMarker = function (map) {
+
+    let data = Lycees.getCoordonnees();
+    console.log(data);
+    data.forEach(coord => {
+        L.marker([coord.latitude, coord.longitude]).addTo(map);
+    });
 }
 
 C.init();
