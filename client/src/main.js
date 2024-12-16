@@ -13,6 +13,11 @@ C.init = async function () {
     V.init();
     // console.log(Candidats.getAll());
     // console.log(Lycees.getAll());
+
+    console.log(Candidats.getAllNumero_uai());
+    // console.log(Lycees.getLycee("0240035H"));
+    console.log(Lycees.getLycee(Candidats.getAllNumero_uai()));
+
 }
 
 let V = {
@@ -40,10 +45,19 @@ V.LoadMaps = function () {
 
 V.loadMarker = function (map) {
 
-    let data = Lycees.getCoordonnees();
+    let data = Lycees.getLycee(Candidats.getAllNumero_uai());
     console.log(data);
+
+    const customIcon = L.icon({
+        iconUrl: '../asset/lycee.png', // Chemin vers l'image de l'icône
+        iconSize: [25, 25], // Taille de l'icône
+        iconAnchor: [12, 41], // Point d'ancrage de l'icône
+        popupAnchor: [1, -34], // Point d'ancrage du popup
+        shadowUrl: null, // Pas d'ombre
+    });
+
     data.forEach(coord => {
-        L.marker([coord.latitude, coord.longitude]).addTo(map);
+        L.marker([coord.latitude, coord.longitude], { icon: customIcon }).addTo(map);
     });
 }
 
