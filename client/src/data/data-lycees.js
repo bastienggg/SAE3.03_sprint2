@@ -17,11 +17,23 @@ Lycees.allgetCoordonnees = function () {
 
 
 Lycees.getLycee = function (numerosUAI) {
+    const uniqueCoordinates = new Set();
     return numerosUAI.map(numeroUAI => {
         const lycee = dataL.find(lycee => lycee.numero_uai === numeroUAI);
-        return lycee ? { latitude: lycee.latitude, longitude: lycee.longitude } : null;
+        const count = numerosUAI.filter(uai => uai === numeroUAI).length;
+        if (lycee) {
+            const coordKey = `${lycee.latitude},${lycee.longitude}`;
+            if (!uniqueCoordinates.has(coordKey)) {
+                uniqueCoordinates.add(coordKey);
+                return { latitude: lycee.latitude, longitude: lycee.longitude, nom: lycee.appellation_officielle, count: count };
+            }
+        }
+        return null;
     }).filter(coordonnees => coordonnees !== null);
 }
+
+
+
 
 
 

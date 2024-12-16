@@ -14,9 +14,8 @@ C.init = async function () {
     // console.log(Candidats.getAll());
     // console.log(Lycees.getAll());
 
-    console.log(Candidats.getAllNumero_uai());
+    // console.log(Candidats.getLastLycees());
     // console.log(Lycees.getLycee("0240035H"));
-    console.log(Lycees.getLycee(Candidats.getAllNumero_uai()));
 
 }
 
@@ -45,7 +44,7 @@ V.LoadMaps = function () {
 
 V.loadMarker = function (map) {
 
-    let data = Lycees.getLycee(Candidats.getAllNumero_uai());
+    let data = Lycees.getLycee(Candidats.getLastLycees());
     console.log(data);
 
     const customIcon = L.icon({
@@ -57,7 +56,8 @@ V.loadMarker = function (map) {
     });
 
     data.forEach(coord => {
-        L.marker([coord.latitude, coord.longitude], { icon: customIcon }).addTo(map);
+        let marker = L.marker([coord.latitude, coord.longitude], { icon: customIcon }).addTo(map);
+        marker.bindPopup(coord.nom + " : " + coord.count + " candidats");
     });
 }
 
