@@ -43,7 +43,7 @@ Lycees.getLycee = function (numerosUAI) { // recherche dicotomique dans le table
             const coordKey = `${lycee.latitude},${lycee.longitude}`;
             if (!uniqueCoordinates.has(coordKey)) {
                 uniqueCoordinates.add(coordKey);
-                return { latitude: lycee.latitude, longitude: lycee.longitude, nom: lycee.appellation_officielle, count: count };
+                return { numero_uai: lycee.numero_uai, latitude: lycee.latitude, longitude: lycee.longitude, nom: lycee.appellation_officielle, count: count };
             }
         }
         return null;

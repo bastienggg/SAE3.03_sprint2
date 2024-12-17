@@ -23,7 +23,7 @@ C.init = async function () {
 
     // console.log(Candidats.getLastLycees());
     // console.log(Lycees.getLycee("0240035H"));
-    console.log(Lycees.getAllTrieNumeroUAI())
+    console.log(Candidats.getLastFiliere());
 
 }
 
@@ -47,14 +47,13 @@ V.LoadMaps = function () {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
-    V.loadMarkerTypeDiplome(map);
+    V.loadMarkerTypeDiplome4(map);
 
 }
 
-V.loadMarkerTypeDiplome = function (map) {
-
-    let data = Lycees.getLycee(Candidats.getLastLycees());
-    console.log(data);
+V.loadMarkerTypeDiplome4 = function (map) {
+    let lyceesData = Lycees.getLycee(Candidats.getLastLycees());
+    let candidatsData = Candidats.getLastFiliere();
 
     const customIcon = L.icon({
         iconUrl: '../asset/lycee.png', // Chemin vers l'image de l'icône
@@ -65,10 +64,17 @@ V.loadMarkerTypeDiplome = function (map) {
     });
 
     var markers = L.markerClusterGroup();
-    data.forEach(coord => {
-        let marker = L.marker([coord.latitude, coord.longitude], { icon: customIcon });
-        marker.bindPopup(coord.nom + " : " + coord.count + " candidats");
-        markers.addLayer(marker);
+    lyceesData.forEach(lycee => {
+        let candidats = candidatsData.find(c => c.numero_uai === lycee.numero_uai);
+        if (candidats) {
+            let marker = L.marker([lycee.latitude, lycee.longitude], { icon: customIcon });
+            let popupContent = `${lycee.nom} :<br>
+                                Générale: ${candidats.generale} candidats,<br> 
+                                STI2D: ${candidats.sti2d} candidats,<br> 
+                                Autres: ${candidats.autres} candidats`;
+            marker.bindPopup(popupContent);
+            markers.addLayer(marker);
+        }
     });
 
     markers.options.spiderfyOnMaxZoom = false;
@@ -76,13 +82,18 @@ V.loadMarkerTypeDiplome = function (map) {
     markers.options.zoomToBoundsOnClick = false;
 
     markers.on('clusterclick', function (a) {
-        let totalCandidats = 0;
+        let totalCandidats = { generale: 0, sti2d: 0, autres: 0 };
         a.layer.getAllChildMarkers().forEach(marker => {
             const popupContent = marker.getPopup().getContent();
-            const count = parseInt(popupContent.split(" : ")[1].split(" ")[0]);
-            totalCandidats += count;
+            const counts = popupContent.match(/(\d+) candidats/g).map(count => parseInt(count));
+            totalCandidats.generale += counts[0];
+            totalCandidats.sti2d += counts[1];
+            totalCandidats.autres += counts[2];
         });
-        a.layer.bindPopup('Total candidats dans le cluster: ' + totalCandidats).openPopup();
+        a.layer.bindPopup(`Total candidats dans le cluster:<br> 
+                           Générale: ${totalCandidats.generale},<br> 
+                           STI2D: ${totalCandidats.sti2d},<br> 
+                           Autres: ${totalCandidats.autres}`).openPopup();
     });
 
     map.addLayer(markers);
