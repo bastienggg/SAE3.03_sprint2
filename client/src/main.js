@@ -23,7 +23,7 @@ C.init = async function () {
 
     // console.log(Candidats.getLastLycees());
     // console.log(Lycees.getLycee("0240035H"));
-    console.log(Candidats.getLastFiliere());
+    console.log(Candidats.getPostBac());
 
 }
 
@@ -48,6 +48,7 @@ V.LoadMaps = function () {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
     V.loadMarkerTypeDiplome4(map);
+    V.loadMarkerTypeDiplome1(map);
 
 }
 
@@ -97,6 +98,32 @@ V.loadMarkerTypeDiplome4 = function (map) {
     });
 
     map.addLayer(markers);
+}
+
+V.loadMarkerTypeDiplome1 = function (map) {
+    let data = Candidats.getPostBac();
+    const customIcon = L.icon({
+        iconUrl: '../asset/diplome.png', // Chemin vers l'image de l'icône
+        iconSize: [25, 25], // Taille de l'icône
+        iconAnchor: [12, 41], // Point d'ancrage de l'icône
+        popupAnchor: [1, -34], // Point d'ancrage du popup
+        shadowUrl: null, // Pas d'ombre
+    });
+
+    data.forEach(async (item) => {
+        let response = await fetch(`https://api.zippopotam.us/fr/${item.codePostal}`);
+        if (response.ok) {
+            let locationData = await response.json();
+            let place = locationData.places[0];
+            let marker = L.marker([place.latitude, place.longitude], { icon: customIcon });
+            let popupContent = `Code Postal: ${item.codePostal}<br>Nombre de candidats: ${item.count}`;
+            marker.bindPopup(popupContent);
+            map.addLayer(marker);
+        } else {
+            console.error(`Failed to fetch data for postal code: ${item.codePostal}`);
+        }
+    });
+
 }
 
 C.init();

@@ -53,4 +53,30 @@ Candidats.getLastFiliere = function () {
     return Object.values(groupedByUai);
 }
 
+Candidats.getPostBac = function () {
+    const postBacCodes = dataC
+        .filter(candidat => candidat.Baccalaureat.TypeDiplomeCode === 1)
+        .map(candidat => {
+            const lastScolarite = candidat.Scolarite.reduce((last, current) => {
+                return new Date(current.AnneeScolaireLibelle.split('-')[0]) > new Date(last.AnneeScolaireLibelle.split('-')[0]) ? current : last;
+            }, candidat.Scolarite[0]);
+            if (lastScolarite && lastScolarite.CommuneEtablissementOrigineCodePostal) {
+                const codePostal = lastScolarite.CommuneEtablissementOrigineCodePostal;
+                return codePostal.substring(0, 2) + '000';
+            }
+            return undefined;
+        })
+        .filter(codePostal => codePostal !== undefined);
+
+    const codePostalCounts = postBacCodes.reduce((acc, codePostal) => {
+        if (!acc[codePostal]) {
+            acc[codePostal] = { codePostal: codePostal, count: 0 };
+        }
+        acc[codePostal].count++;
+        return acc;
+    }, {});
+
+    return Object.values(codePostalCounts);
+}
+
 export { Candidats };
