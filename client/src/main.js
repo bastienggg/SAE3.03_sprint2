@@ -4,7 +4,14 @@ import { Lycees } from "./data/data-lycees.js";
 import './index.css';
 
 import L from "leaflet";
+import 'leaflet.markercluster';
+
 import 'leaflet/dist/leaflet.css';
+
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+
+
 
 
 let C = {};
@@ -16,6 +23,7 @@ C.init = async function () {
 
     // console.log(Candidats.getLastLycees());
     // console.log(Lycees.getLycee("0240035H"));
+    console.log(Lycees.getAllTrieNumeroUAI())
 
 }
 
@@ -26,6 +34,7 @@ let V = {
 V.init = function () {
     V.renderHeader();
     V.LoadMaps();
+
 }
 
 V.renderHeader = function () {
@@ -38,11 +47,11 @@ V.LoadMaps = function () {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
-    V.loadMarker(map);
+    V.loadMarkerTypeDiplome(map);
 
 }
 
-V.loadMarker = function (map) {
+V.loadMarkerTypeDiplome = function (map) {
 
     let data = Lycees.getLycee(Candidats.getLastLycees());
     console.log(data);
@@ -55,10 +64,28 @@ V.loadMarker = function (map) {
         shadowUrl: null, // Pas d'ombre
     });
 
+    var markers = L.markerClusterGroup();
     data.forEach(coord => {
-        let marker = L.marker([coord.latitude, coord.longitude], { icon: customIcon }).addTo(map);
+        let marker = L.marker([coord.latitude, coord.longitude], { icon: customIcon });
         marker.bindPopup(coord.nom + " : " + coord.count + " candidats");
+        markers.addLayer(marker);
     });
+
+    markers.options.spiderfyOnMaxZoom = false;
+    markers.options.showCoverageOnHover = false;
+    markers.options.zoomToBoundsOnClick = false;
+
+    markers.on('clusterclick', function (a) {
+        let totalCandidats = 0;
+        a.layer.getAllChildMarkers().forEach(marker => {
+            const popupContent = marker.getPopup().getContent();
+            const count = parseInt(popupContent.split(" : ")[1].split(" ")[0]);
+            totalCandidats += count;
+        });
+        a.layer.bindPopup('Total candidats dans le cluster: ' + totalCandidats).openPopup();
+    });
+
+    map.addLayer(markers);
 }
 
 C.init();

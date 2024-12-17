@@ -24,4 +24,8 @@ Candidats.getLastLycees = function () {
         })
 }
 
+Candidats.getLastFiliere = function () {
+
+}
+
 export { Candidats };
