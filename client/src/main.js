@@ -30,13 +30,15 @@ C.init = async function () {
 }
 
 let V = {
-    header: document.querySelector("#header")
+    header: document.querySelector("#header"),
+    chart: document.querySelector("#chart"),
 };
 
 V.init = function () {
     V.renderHeader();
     V.renderChart();
     V.LoadMaps();
+    C.sliderValue();
 
 }
 
@@ -44,8 +46,55 @@ V.renderHeader = function () {
     V.header.innerHTML = HeaderView.render();
 }
 
-V.renderChart = function () {
-    V.innerHTML = ChartView.render();
+C.sliderValue = function () {
+    let slider = document.getElementById("slider");
+    slider.addEventListener("input", function () {
+        V.chart.innerHTML = "";
+        V.renderChart(parseInt(slider.value));
+    });
+}
+
+
+V.renderChart = function (sliderValue) {
+
+    let data = Candidats.getPostBac();
+    let data2 = Candidats.getType4();
+    let combinedData = data.map(item => {
+        let match = data2.find(d => d.codePostal === item.codePostal);
+        return {
+            codePostal: item.codePostal.slice(0, -3), // Remove the last 3 characters
+            count: item.count,
+            generale: match ? match.generale : 0,
+            sti2d: match ? match.sti2d : 0,
+            autres: match ? match.autres : 0,
+            total: item.count + (match ? match.generale + match.sti2d + match.autres : 0)
+        };
+    });
+
+    // Group candidates into "autres" if total is less than slider value
+    let groupedData = { codePostal: "Autres", count: 0, generale: 0, sti2d: 0, autres: 0, total: 0 };
+    combinedData = combinedData.map(item => {
+        if (item.total < sliderValue) {
+            groupedData.count += item.count;
+            groupedData.generale += item.generale;
+            groupedData.sti2d += item.sti2d;
+            groupedData.autres += item.autres;
+            groupedData.total += item.total;
+            return null;
+        }
+        return item;
+    }).filter(item => item !== null);
+
+    if (groupedData.total > 0) {
+        combinedData.push(groupedData);
+    }
+
+    // Sort combinedData by total in descending order
+    combinedData.sort((a, b) => b.total - a.total);
+
+
+
+    V.innerHTML = ChartView.render(combinedData);
 }
 
 V.LoadMaps = function () {

@@ -1,23 +1,8 @@
 import ApexCharts from 'ApexCharts';
-import { Candidats } from "./../../data/data-candidats";
 
 let ChartView = {
 
-    render: function () {
-        let data = Candidats.getPostBac();
-        let data2 = Candidats.getType4();
-
-        let combinedData = data.map(item => {
-            let match = data2.find(d => d.codePostal === item.codePostal);
-            return {
-                codePostal: item.codePostal.slice(0, -3), // Remove the last 3 characters
-                count: item.count,
-                generale: match ? match.generale : 0,
-                sti2d: match ? match.sti2d : 0,
-                autres: match ? match.autres : 0
-            };
-        });
-
+    render: function (combinedData) {
         let categories = combinedData.map(item => item.codePostal);
         let series = [
             {
