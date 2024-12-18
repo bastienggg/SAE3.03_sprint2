@@ -1,5 +1,4 @@
 
-
 let dataC = await fetch("./src/data/json/candidatures.json");
 dataC = await dataC.json();
 
@@ -9,30 +8,46 @@ Candidats.getAll = function () {
     return dataC;
 }
 
-Candidats.getAllNumero_uai = function () {
-    return [...new Set(dataC.map(candidat => candidat.Scolarite.map(scolarite => scolarite.UAIEtablissementorigine)).flat().filter(uai => uai !== undefined))];
+Candidats.getAllNumero_uai = function () { // retourne le tableau indexé par numéro UAI
+    const uaiSet = new Set(); // Set pour éviter les doublons
+    dataC.forEach(candidat => {
+        candidat.Scolarite.forEach(scolarite => {
+            if (scolarite.UAIEtablissementorigine !== undefined) {
+                uaiSet.add(scolarite.UAIEtablissementorigine);
+            }
+        });
+    });
+    return [...uaiSet];
 }
 
-Candidats.getLastLycees = function () {
+Candidats.getLastLycees = function () { // retourne le dernier lycée fréquenté par les candidats
     return dataC
         .filter(candidat => candidat.Baccalaureat.TypeDiplomeCode === 4 && candidat.Scolarite.length > 0)
         .map(candidat => {
-            const lastScolarite = candidat.Scolarite.reduce((last, current) => {
-                return new Date(current.AnneeScolaireLibelle.split('-')[0]) > new Date(last.AnneeScolaireLibelle.split('-')[0]) ? current : last;
-            }, candidat.Scolarite[0]);
+            let lastScolarite = candidat.Scolarite[0];
+            for (let i = 1; i < candidat.Scolarite.length; i++) {
+                const current = candidat.Scolarite[i];
+                if (new Date(current.AnneeScolaireLibelle.split('-')[0]) > new Date(lastScolarite.AnneeScolaireLibelle.split('-')[0])) {
+                    lastScolarite = current;
+                }
+            }
             return lastScolarite ? lastScolarite.UAIEtablissementorigine : undefined;
-        })
+        });
 }
 
-Candidats.getLastFiliere = function () {
+Candidats.getLastFiliere = function () { // retourne le nombre de candidats par filière
     const groupedByUai = {};
 
     dataC
         .filter(candidat => candidat.Baccalaureat.TypeDiplomeCode === 4 && candidat.Scolarite.length > 0)
         .forEach(candidat => {
-            const lastScolarite = candidat.Scolarite.reduce((last, current) => {
-                return new Date(current.AnneeScolaireLibelle.split('-')[0]) > new Date(last.AnneeScolaireLibelle.split('-')[0]) ? current : last;
-            }, candidat.Scolarite[0]);
+            let lastScolarite = candidat.Scolarite[0];
+            for (let i = 1; i < candidat.Scolarite.length; i++) {
+                const current = candidat.Scolarite[i];
+                if (new Date(current.AnneeScolaireLibelle.split('-')[0]) > new Date(lastScolarite.AnneeScolaireLibelle.split('-')[0])) {
+                    lastScolarite = current;
+                }
+            }
             let filiere = candidat.Baccalaureat.SerieDiplomeCode;
             if (filiere !== 'Générale' && filiere !== 'STI2D') {
                 filiere = 'autres';
@@ -52,13 +67,18 @@ Candidats.getLastFiliere = function () {
 
     return Object.values(groupedByUai);
 }
-Candidats.getPostBac = function () {
+
+Candidats.getPostBac = function () { // retourne le nombre de candidats par code postal
     const postBacCodes = dataC
         .filter(candidat => candidat.Baccalaureat.TypeDiplomeCode === 1)
         .map(candidat => {
-            const lastScolarite = candidat.Scolarite.reduce((last, current) => {
-                return new Date(current.AnneeScolaireLibelle.split('-')[0]) > new Date(last.AnneeScolaireLibelle.split('-')[0]) ? current : last;
-            }, candidat.Scolarite[0]);
+            let lastScolarite = candidat.Scolarite[0];
+            for (let i = 1; i < candidat.Scolarite.length; i++) {
+                const current = candidat.Scolarite[i];
+                if (new Date(current.AnneeScolaireLibelle.split('-')[0]) > new Date(lastScolarite.AnneeScolaireLibelle.split('-')[0])) {
+                    lastScolarite = current;
+                }
+            }
             if (lastScolarite && lastScolarite.CommuneEtablissementOrigineCodePostal) {
                 const codePostal = lastScolarite.CommuneEtablissementOrigineCodePostal;
                 return codePostal.substring(0, 2) + '000';
@@ -67,25 +87,28 @@ Candidats.getPostBac = function () {
         })
         .filter(codePostal => codePostal !== undefined);
 
-    const codePostalCounts = postBacCodes.reduce((acc, codePostal) => {
-        if (!acc[codePostal]) {
-            acc[codePostal] = { codePostal: codePostal, count: 0 };
+    const codePostalCounts = {};
+    postBacCodes.forEach(codePostal => {
+        if (!codePostalCounts[codePostal]) {
+            codePostalCounts[codePostal] = { codePostal: codePostal, count: 0 };
         }
-        acc[codePostal].count++;
-        return acc;
-    }, {});
+        codePostalCounts[codePostal].count++;
+    });
 
     return Object.values(codePostalCounts);
 }
 
-
-Candidats.getType4 = function () {
+Candidats.getType4 = function () { // retourne le nombre de candidats par code postal et par filière
     const postBacCodes = dataC
         .filter(candidat => candidat.Baccalaureat.TypeDiplomeCode === 4)
         .map(candidat => {
-            const lastScolarite = candidat.Scolarite.reduce((last, current) => {
-                return new Date(current.AnneeScolaireLibelle.split('-')[0]) > new Date(last.AnneeScolaireLibelle.split('-')[0]) ? current : last;
-            }, candidat.Scolarite[0]);
+            let lastScolarite = candidat.Scolarite[0];
+            for (let i = 1; i < candidat.Scolarite.length; i++) {
+                const current = candidat.Scolarite[i];
+                if (new Date(current.AnneeScolaireLibelle.split('-')[0]) > new Date(lastScolarite.AnneeScolaireLibelle.split('-')[0])) {
+                    lastScolarite = current;
+                }
+            }
             if (lastScolarite && lastScolarite.CommuneEtablissementOrigineCodePostal) {
                 const codePostal = lastScolarite.CommuneEtablissementOrigineCodePostal;
                 let filiere = candidat.Baccalaureat.SerieDiplomeCode;
@@ -105,13 +128,13 @@ Candidats.getType4 = function () {
         })
         .filter(item => item !== undefined);
 
-    const codePostalCounts = postBacCodes.reduce((acc, item) => {
-        if (!acc[item.codePostal]) {
-            acc[item.codePostal] = { codePostal: item.codePostal, generale: 0, sti2d: 0, autres: 0 };
+    const codePostalCounts = {};
+    postBacCodes.forEach(item => {
+        if (!codePostalCounts[item.codePostal]) {
+            codePostalCounts[item.codePostal] = { codePostal: item.codePostal, generale: 0, sti2d: 0, autres: 0 };
         }
-        acc[item.codePostal][item.filiere]++;
-        return acc;
-    }, {});
+        codePostalCounts[item.codePostal][item.filiere]++;
+    });
 
     return Object.values(codePostalCounts);
 }

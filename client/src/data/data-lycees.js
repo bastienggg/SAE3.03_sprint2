@@ -23,8 +23,7 @@ Lycees.getLycee = function (numerosUAI) { // recherche dicotomique dans le table
 
         while (left <= right) {
             const mid = Math.floor((left + right) / 2);
-            const comparison = sortedLycees[mid].numero_uai.localeCompare(numeroUAI);
-
+            const comparison = sortedLycees[mid].numero_uai.localeCompare(numeroUAI); // localeCompare retourne 0 si les deux chaînes sont égales, < 0 si la chaîne est avant la chaîne de comparaison, > 0 si la chaîne est après la chaîne de comparaison
             if (comparison === 0) {
                 return sortedLycees[mid];
             } else if (comparison < 0) {
@@ -34,9 +33,9 @@ Lycees.getLycee = function (numerosUAI) { // recherche dicotomique dans le table
             }
         }
 
-        return null;
+        return null; // si le numéro UAI n'est pas trouvé
     }
-    return numerosUAI.map(numeroUAI => {
+    return numerosUAI.map(numeroUAI => { // map retourne un nouveau tableau avec les éléments transformés par la fonction passée en argument
         const lycee = binarySearch(numeroUAI);
         const count = numerosUAI.filter(uai => uai === numeroUAI).length;
         if (lycee) {
