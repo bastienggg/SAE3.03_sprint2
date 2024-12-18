@@ -52,7 +52,6 @@ Candidats.getLastFiliere = function () {
 
     return Object.values(groupedByUai);
 }
-
 Candidats.getPostBac = function () {
     const postBacCodes = dataC
         .filter(candidat => candidat.Baccalaureat.TypeDiplomeCode === 1)
@@ -73,6 +72,44 @@ Candidats.getPostBac = function () {
             acc[codePostal] = { codePostal: codePostal, count: 0 };
         }
         acc[codePostal].count++;
+        return acc;
+    }, {});
+
+    return Object.values(codePostalCounts);
+}
+
+
+Candidats.getType4 = function () {
+    const postBacCodes = dataC
+        .filter(candidat => candidat.Baccalaureat.TypeDiplomeCode === 4)
+        .map(candidat => {
+            const lastScolarite = candidat.Scolarite.reduce((last, current) => {
+                return new Date(current.AnneeScolaireLibelle.split('-')[0]) > new Date(last.AnneeScolaireLibelle.split('-')[0]) ? current : last;
+            }, candidat.Scolarite[0]);
+            if (lastScolarite && lastScolarite.CommuneEtablissementOrigineCodePostal) {
+                const codePostal = lastScolarite.CommuneEtablissementOrigineCodePostal;
+                let filiere = candidat.Baccalaureat.SerieDiplomeCode;
+                if (filiere !== 'Générale' && filiere !== 'STI2D') {
+                    filiere = 'autres';
+                } else if (filiere === 'Générale') {
+                    filiere = 'generale';
+                } else if (filiere === 'STI2D') {
+                    filiere = 'sti2d';
+                }
+                return {
+                    codePostal: codePostal.substring(0, 2) + '000',
+                    filiere: filiere
+                };
+            }
+            return undefined;
+        })
+        .filter(item => item !== undefined);
+
+    const codePostalCounts = postBacCodes.reduce((acc, item) => {
+        if (!acc[item.codePostal]) {
+            acc[item.codePostal] = { codePostal: item.codePostal, generale: 0, sti2d: 0, autres: 0 };
+        }
+        acc[item.codePostal][item.filiere]++;
         return acc;
     }, {});
 

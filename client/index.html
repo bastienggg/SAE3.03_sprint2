@@ -8,10 +8,15 @@
   </head>
   <body class="bg-gray-100 h-full">
     <section id="header"></section>
-    <div id="map"></div>
+    <section class="flex flex-row">
+      <div id="map"></div>
+      <div id="chart" class="w-2/5"></div>
+    </section>
+
     <style>
       #map {
         height: 600px;
+        width: 60%;
       }
     </style>
     <script type="module" src="src/main.js"></script>

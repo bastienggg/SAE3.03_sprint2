@@ -1,6 +1,7 @@
 import { HeaderView } from "./ui/header/index.js";
 import { Candidats } from "./data/data-candidats.js";
 import { Lycees } from "./data/data-lycees.js";
+import { ChartView } from "./ui/chart/index.js"
 import './index.css';
 
 import L from "leaflet";
@@ -24,6 +25,7 @@ C.init = async function () {
     // console.log(Candidats.getLastLycees());
     // console.log(Lycees.getLycee("0240035H"));
     console.log(Candidats.getPostBac());
+    console.log(Candidats.getType4());
 
 }
 
@@ -33,12 +35,17 @@ let V = {
 
 V.init = function () {
     V.renderHeader();
+    V.renderChart();
     V.LoadMaps();
 
 }
 
 V.renderHeader = function () {
     V.header.innerHTML = HeaderView.render();
+}
+
+V.renderChart = function () {
+    V.innerHTML = ChartView.render();
 }
 
 V.LoadMaps = function () {
