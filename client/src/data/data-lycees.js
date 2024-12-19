@@ -1,19 +1,17 @@
 let dataL = await fetch("./src/data/json/lycees.json");
 dataL = await dataL.json();
 
-
 let Lycees = {}
 
 Lycees.getAll = function () {
     return dataL;
 }
 
-Lycees.getAllTrieNumeroUAI = function () { // retourne le tableau indexé mpar numéro UAI
+Lycees.getAllTrieNumeroUAI = function () { // retourne le tableau indexé par numéro UAI
     return dataL.slice(1).sort((a, b) => a.numero_uai.localeCompare(b.numero_uai));
 };
 
-
-Lycees.getLycee = function (numerosUAI) { // recherche dicotomique dans le tableau des lycées indexé par les numéro uai 
+Lycees.getLycee = function (numerosUAI) { // recherche dichotomique dans le tableau des lycées indexé par les numéro uai 
     const uniqueCoordinates = new Set();
     const sortedLycees = Lycees.getAllTrieNumeroUAI();
 
@@ -35,18 +33,21 @@ Lycees.getLycee = function (numerosUAI) { // recherche dicotomique dans le table
 
         return null; // si le numéro UAI n'est pas trouvé
     }
-    return numerosUAI.map(numeroUAI => { // map retourne un nouveau tableau avec les éléments transformés par la fonction passée en argument
+
+    let result = [];
+    for (let i = 0; i < numerosUAI.length; i++) {
+        const numeroUAI = numerosUAI[i];
         const lycee = binarySearch(numeroUAI);
         const count = numerosUAI.filter(uai => uai === numeroUAI).length;
         if (lycee) {
             const coordKey = `${lycee.latitude},${lycee.longitude}`;
             if (!uniqueCoordinates.has(coordKey)) {
                 uniqueCoordinates.add(coordKey);
-                return { numero_uai: lycee.numero_uai, latitude: lycee.latitude, longitude: lycee.longitude, nom: lycee.appellation_officielle, count: count };
+                result.push({ numero_uai: lycee.numero_uai, latitude: lycee.latitude, longitude: lycee.longitude, nom: lycee.appellation_officielle, count: count });
             }
         }
-        return null;
-    }).filter(coordonnees => coordonnees !== null);
+    }
+    return result;
 }
 
 export { Lycees };
