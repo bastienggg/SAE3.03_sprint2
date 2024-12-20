@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Visualisation cartographique des candidatures MMI</title>
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./assets/favicon-32x32-BXyC5YmY.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="./assets/favicon-16x16-VL4wJbDY.png"
+    />
+    <style>
+      #map {
+        height: 100vh;
+        width: 100%;
+        border-radius: 2rem;
+        border: solid 2px #737373;
+      }
+      button:hover {
+        background-color: #555;
+        border-color: #333;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-B9zRC0IN.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DsmueDiP.css" />
+  </head>
+  <body class="bg-neutral-950 h-full">
+    <section class="flex flex-row w-full h-screen main">
+      <div
+        class="flex flex-col bg-neutral-950 h-screen w-1/3 p-4 items-center justify-between"
+      >
+        <div class="w-full flex flex-col items-center gap-2">
+          <h1 class="text-white font-bold uppercase mb-10">Candidatures MMI</h1>
+          <p class="text-white w-full text-left">Affichage</p>
+          <button
+            id="showchart"
+            class="p-1 text-center w-full bg-neutral-900 border-2 border-neutral-700 text-white rounded-lg uppercase"
+          >
+            graphique
+          </button>
+          <button
+            id="showmap"
+            class="p-1 text-center w-full bg-neutral-900 border-2 border-neutral-700 text-white rounded-lg uppercase"
+          >
+            carte
+          </button>
+          <p class="text-white w-full text-left mt-6">Filiére</p>
+          <div class="flex flex-col gap-2 mt-2 w-full">
+            <label class="text-white flex items-center">
+              <input type="checkbox" id="postbacs" class="mr-2" />
+              Post-bacs
+            </label>
+            <label class="text-white flex items-center">
+              <input type="checkbox" id="Générale" class="mr-2" />
+              Générale
+            </label>
+            <label class="text-white flex items-center">
+              <input type="checkbox" id="STI2D" class="mr-2" />
+              STI2D
+            </label>
+            <label class="text-white flex items-center">
+              <input type="checkbox" id="autres" class="mr-2" />
+              Autres
+            </label>
+          </div>
+          <button
+            id="all"
+            class="p-1 text-center w-full bg-neutral-900 border-2 border-neutral-700 text-white rounded-lg uppercase"
+          >
+            all
+          </button>
+          <p class="text-white w-full text-left mt-10">Options</p>
+          <div id="optionChart" class="hidden">
+            <input
+              type="range"
+              id="sliderChart"
+              name="slider"
+              min="0"
+              max="40"
+              value="15"
+              class="mt-1 block w-full"
+            />
+          </div>
+          <div id="optionMap" class="flex">
+            <input
+              type="range"
+              id="sliderMap"
+              name="slider"
+              min="0"
+              max="650000"
+              value="15"
+              class="mt-1 block w-full"
+            />
+          </div>
+          <p id="distance" class="text-white"></p>
+          <button
+            id="resetcercle"
+            class="p-1 text-center w-full bg-neutral-900 border-2 border-neutral-700 text-white rounded-lg uppercase items-center justify-center"
+          >
+            Reset
+          </button>
+        </div>
+        <label
+          class="p-1 text-center w-full bg-neutral-900 border-2 border-neutral-700 text-white rounded-lg uppercase flex items-center justify-center cursor-pointer"
+        >
+          <input type="checkbox" id="toggleTheme" class="hidden" />
+          <span>Toggle Dark/Light Mode</span>
+        </label>
+      </div>
+      <div id="map"></div>
+      <div id="chart" class="w-full hidden"></div>
+    </section>
+  </body>
+</html>
