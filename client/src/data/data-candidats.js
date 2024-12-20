@@ -1,6 +1,8 @@
 let dataC = await fetch("./src/data/json/candidatures.json");
 dataC = await dataC.json();
 
+
+
 let Candidats = {}
 
 Candidats.getAll = function () {
@@ -36,7 +38,7 @@ Candidats.getLastLycees = function () { // retourne le dernier lycée fréquent�
         });
 }
 
-Candidats.getLastFiliere = function () { // retourne le nombre de candidats par filière
+Candidats.getLastFiliere = function () { // retourne le nombre de candidats par filière et par lycées pour mettre dans rendertype 4
     const groupedByUai = {};
 
     const filteredData = dataC.filter(candidat => candidat.Baccalaureat.TypeDiplomeCode === 4 && candidat.Scolarite.length > 0);
@@ -67,6 +69,39 @@ Candidats.getLastFiliere = function () { // retourne le nombre de candidats par 
     }
 
     return Object.values(groupedByUai);
+}
+Candidats.getByFiliere = function (filiere) { // retourne un tableau d'objet avec numero uai et un objet filiere contenant le count pour la filière spécifiée
+    const filiereCounts = [];
+    const uaiMap = {};
+    for (let i = 0; i < dataC.length; i++) {
+        const candidat = dataC[i];
+        let isMatchingFiliere = false;
+        if (candidat.Baccalaureat.TypeDiplomeCode === 4) {
+            if (filiere === 'autres') {
+                isMatchingFiliere = candidat.Baccalaureat.SerieDiplomeCode !== 'Générale' && candidat.Baccalaureat.SerieDiplomeCode !== 'STI2D';
+            } else {
+                isMatchingFiliere = candidat.Baccalaureat.SerieDiplomeCode === filiere;
+            }
+        }
+        if (isMatchingFiliere) {
+            let lastScolarite = candidat.Scolarite[0];
+            for (let j = 1; j < candidat.Scolarite.length; j++) {
+                const current = candidat.Scolarite[j];
+                if (new Date(current.AnneeScolaireLibelle.split('-')[0]) > new Date(lastScolarite.AnneeScolaireLibelle.split('-')[0])) {
+                    lastScolarite = current;
+                }
+            }
+            if (lastScolarite && lastScolarite.UAIEtablissementorigine) {
+                const uai = lastScolarite.UAIEtablissementorigine;
+                if (!uaiMap[uai]) {
+                    uaiMap[uai] = { numero_uai: uai, [filiere]: 0 };
+                    filiereCounts.push(uaiMap[uai]);
+                }
+                uaiMap[uai][filiere]++;
+            }
+        }
+    }
+    return filiereCounts;
 }
 
 Candidats.getPostBac = function () { // retourne le nombre de candidats par code postal

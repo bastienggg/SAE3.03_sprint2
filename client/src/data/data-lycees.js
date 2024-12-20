@@ -1,5 +1,15 @@
 let dataL = await fetch("./src/data/json/lycees.json");
 dataL = await dataL.json();
+dataL = dataL.map(lycee => ({
+    numero_uai: lycee.numero_uai,
+    appellation_officielle: lycee.appellation_officielle,
+    coordonnee_x: lycee.coordonnee_x,
+    coordonnee_y: lycee.coordonnee_y,
+    longitude: lycee.longitude,
+    latitude: lycee.latitude,
+    code_commune: lycee.code_commune,
+    libelle_departement: lycee.libelle_departement
+})).slice(1).sort((a, b) => a.numero_uai.localeCompare(b.numero_uai));
 
 let Lycees = {}
 

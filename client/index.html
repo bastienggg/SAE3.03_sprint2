@@ -17,6 +17,18 @@
       sizes="16x16"
       href="./asset/favicon-16x16.png"
     />
+    <style>
+      #map {
+        height: 100vh;
+        width: 100%;
+        border-radius: 2rem;
+        border: solid 2px #737373;
+      }
+      button:hover {
+        background-color: #555;
+        border-color: #333;
+      }
+    </style>
   </head>
   <body class="bg-neutral-950 h-full">
     <section class="flex flex-row w-full h-screen main">
@@ -37,6 +49,31 @@
             class="p-1 text-center w-full bg-neutral-900 border-2 border-neutral-700 text-white rounded-lg uppercase"
           >
             carte
+          </button>
+          <p class="text-white w-full text-left mt-6">Filiére</p>
+          <div class="flex flex-col gap-2 mt-2 w-full">
+            <label class="text-white flex items-center">
+              <input type="checkbox" id="postbacs" class="mr-2" />
+              Post-bacs
+            </label>
+            <label class="text-white flex items-center">
+              <input type="checkbox" id="Générale" class="mr-2" />
+              Générale
+            </label>
+            <label class="text-white flex items-center">
+              <input type="checkbox" id="STI2D" class="mr-2" />
+              STI2D
+            </label>
+            <label class="text-white flex items-center">
+              <input type="checkbox" id="autres" class="mr-2" />
+              Autres
+            </label>
+          </div>
+          <button
+            id="all"
+            class="p-1 text-center w-full bg-neutral-900 border-2 border-neutral-700 text-white rounded-lg uppercase"
+          >
+            all
           </button>
           <p class="text-white w-full text-left mt-10">Options</p>
           <div id="optionChart" class="hidden">
@@ -62,6 +99,12 @@
             />
           </div>
           <p id="distance" class="text-white"></p>
+          <button
+            id="resetcercle"
+            class="p-1 text-center w-full bg-neutral-900 border-2 border-neutral-700 text-white rounded-lg uppercase items-center justify-center"
+          >
+            Reset
+          </button>
         </div>
         <label
           class="p-1 text-center w-full bg-neutral-900 border-2 border-neutral-700 text-white rounded-lg uppercase flex items-center justify-center cursor-pointer"
@@ -73,14 +116,6 @@
       <div id="map"></div>
       <div id="chart" class="w-full hidden"></div>
     </section>
-    <style>
-      #map {
-        height: 100vh;
-        width: 100%;
-        border-radius: 2rem;
-        border: solid 2px #737373;
-      }
-    </style>
     <script type="module" src="src/main.js"></script>
   </body>
 </html>
